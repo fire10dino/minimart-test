@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Mart</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000;
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #333;
+            position: sticky;
+            top: 0;
+            background: #000;
+            z-index: 100;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            color: #2196F3;
+        }
+
+        .category-nav {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            padding: 15px 0;
+            margin-bottom: 30px;
+            justify-content: center;
+            position: sticky;
+            top: 85px;
+            background: #000;
+            z-index: 99;
+            border-bottom: 1px solid #333;
+        }
+
+        .category-link {
+            background: #1a1a1a;
+            color: #2196F3;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            border: 2px solid #2196F3;
+            transition: all 0.3s;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .category-link:hover {
+            background: #2196F3;
+            color: white;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .cart-button {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.3s;
+        }
+
+        .cart-button:hover {
+            background: #1976D2;
+        }
+
+        .cart-count {
+            background: white;
+            color: #2196F3;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .category {
+            margin-bottom: 50px;
+        }
+
+        .category-title {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #2196F3;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .product-card {
+            background: #1a1a1a;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid #333;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            border-color: #4CAF50;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            background: #2a2a2a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5em;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 10px;
+        }
+
+        .image-input {
+            width: 90%;
+            padding: 8px;
+            background: #1a1a1a;
+            border: 1px solid #2196F3;
+            color: white;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .set-image-btn {
+            padding: 6px 12px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+
+        .set-image-btn:hover {
+            background: #1976D2;
+        }
+
+        .product-info {
+            padding: 20px;
+        }
+
+        .product-name {
+            font-size: 1.3em;
+            margin-bottom: 8px;
+            color: white;
+        }
+
+        .product-price {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2196F3;
+            margin-bottom: 15px;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .qty-btn {
+            background: #333;
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 6px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .qty-btn:hover {
+            background: #555;
+        }
+
+        .qty-btn[data-action="increase"] {
+            background: #2196F3;
+        }
+
+        .qty-btn[data-action="increase"]:hover {
+            background: #1976D2;
+        }
+
+        .qty-btn[data-action="decrease"] {
+            background: #f44336;
+        }
+
+        .qty-btn[data-action="decrease"]:hover {
+            background: #d32f2f;
+        }
+
+        .qty-display {
+            background: #2a2a2a;
+            padding: 8px 20px;
+            border-radius: 6px;
+            min-width: 50px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .add-to-cart-btn {
+            width: 100%;
+            padding: 12px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .add-to-cart-btn:hover {
+            background: #1976D2;
+        }
+
+        .cart-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            z-index: 999;
+        }
+
+        .cart-overlay.active {
+            display: block;
+        }
+
+        .cart-sidebar {
+            position: fixed;
+            top: 0;
+            right: -450px;
+            width: 450px;
+            height: 100%;
+            background: #1a1a1a;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-sidebar.active {
+            right: 0;
+        }
+
+        .cart-header {
+            padding: 25px;
+            border-bottom: 2px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-header h2 {
+            color: #2196F3;
+            font-size: 1.8em;
+        }
+
+        .close-cart {
+            background: #333;
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .close-cart:hover {
+            background: #ff4444;
+        }
+
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .cart-item {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .cart-item-price {
+            color: #2196F3;
+            font-size: 0.9em;
+        }
+
+        .cart-item-qty {
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        .remove-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .remove-btn:hover {
+            background: #cc0000;
+        }
+
+        .cart-footer {
+            padding: 25px;
+            border-top: 2px solid #333;
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #2196F3;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 15px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .checkout-btn:hover {
+            background: #1976D2;
+        }
+
+        .empty-cart-message {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <!-- Cart Overlay and Sidebar -->
+    <div class="cart-overlay" id="cartOverlay"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h2>🛒 Your Cart</h2>
+            <button class="close-cart" id="closeCartBtn">✕</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <div class="empty-cart-message">Your cart is empty</div>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="totalAmount">$0.00</span>
+            </div>
+            <button class="checkout-btn" id="checkoutBtn">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>🏪 Mini Mart</h1>
+            <button class="cart-button" id="cartButton">
+                🛒 Cart
+                <span class="cart-count" id="cartCount">0</span>
+            </button>
+        </header>
+
+        <!-- Category Navigation -->
+        <div class="category-nav">
+            <button class="category-link" data-category="cookies">🍪 Cookies</button>
+            <button class="category-link" data-category="snacks">🍿 Snacks</button>
+            <button class="category-link" data-category="drinks">🥤 Drinks</button>
+            <button class="category-link" data-category="ramen">🍜 Instant Ramen</button>
+            <button class="category-link" data-category="donuts">🍩 Donuts</button>
+            <button class="category-link" data-category="giftcards">🎁 Gift Cards</button>
+        </div>
+
+        <!-- Cookies Category -->
+        <div class="category" id="cookies">
+            <h2 class="category-title">🍪 Cookies</h2>
+            <div class="products-grid" id="cookies-grid"></div>
+        </div>
+
+        <!-- Snacks Category -->
+        <div class="category" id="snacks">
+            <h2 class="category-title">🍿 Snacks</h2>
+            <div class="products-grid" id="snacks-grid"></div>
+        </div>
+
+        <!-- Drinks Category -->
+        <div class="category" id="drinks">
+            <h2 class="category-title">🥤 Drinks</h2>
+            <div class="products-grid" id="drinks-grid"></div>
+        </div>
+
+        <!-- Instant Ramen Category -->
+        <div class="category" id="ramen">
+            <h2 class="category-title">🍜 Instant Ramen</h2>
+            <div class="products-grid" id="ramen-grid"></div>
+        </div>
+
+        <!-- Donuts Category -->
+        <div class="category" id="donuts">
+            <h2 class="category-title">🍩 Donuts</h2>
+            <div class="products-grid" id="donuts-grid"></div>
+        </div>
+
+        <!-- Gift Cards Category -->
+        <div class="category" id="giftcards">
+            <h2 class="category-title">🎁 Gift Cards</h2>
+            <div class="products-grid" id="giftcards-grid"></div>
+        </div>
+    </div>
+
+    <script>
+        // Products data
+        const products = {
+            cookies: [
+                { id: 'cookies-1', name: 'Lays Chips', price: 3.99, image: '' },
+                { id: 'cookies-2', name: 'Doritos', price: 3.49, image: '' },
+                { id: 'cookies-3', name: 'Pringles', price: 2.99, image: '' }
+            ],
+            snacks: [
+                { id: 'snacks-1', name: 'Airwaves', price: 2.49, image: '' },
+                { id: 'snacks-2', name: 'Hersheys', price: 4.99, image: '' },
+                { id: 'snacks-3', name: 'Chofer', price: 1.99, image: '' }
+            ],
+            drinks: [
+                { id: 'drinks-1', name: 'Coke', price: 1.49, image: '' },
+                { id: 'drinks-2', name: 'Sprite', price: 0.99, image: '' },
+                { id: 'drinks-3', name: 'Lemon Tea', price: 1.99, image: '' },
+                { id: 'drinks-4', name: 'Pepsi', price: 3.49, image: '' }
+            ],
+            ramen: [
+                { id: 'ramen-1', name: 'Shin Ramen', price: 1.29, image: '' }
+            ],
+            donuts: [
+                { id: 'donuts-1', name: 'Glazed Donut', price: 1.49, image: '' },
+                { id: 'donuts-2', name: 'Strawberry Donut', price: 1.69, image: '' },
+                { id: 'donuts-3', name: 'Strawberry/Chocolate Donut', price: 1.69, image: '' }
+            ],
+            giftcards: [
+                { id: 'giftcard-1', name: 'Minecraft Gift Card', price: 10.00, image: '' },
+                { id: 'giftcard-2', name: 'Apple Shop Gift Card', price: 25.00, image: '' },
+                { id: 'giftcard-3', name: 'Google Play Gift Card', price: 50.00, image: '' }
+            ]
+        };
+
+        let cart = [];
+        let quantities = {};
+
+        // Initialize quantities
+        Object.values(products).flat().forEach(p => {
+            quantities[p.id] = 1;
+        });
+
+        // Render products
+        function renderProducts() {
+            Object.keys(products).forEach(category => {
+                const grid = document.getElementById(`${category}-grid`);
+                grid.innerHTML = products[category].map(p => `
+                    <div class="product-card">
+                        <div class="product-image">
+                            ${p.image ? `<img src="${p.image}" alt="${p.name}">` : p.emoji}
+                        </div>
+                        <div class="product-info">
+                            <div class="product-name">${p.name}</div>
+                            <div class="product-price">${p.price.toFixed(2)}</div>
+                            <div class="quantity-control">
+                                <button class="qty-btn" data-id="${p.id}" data-action="decrease">-</button>
+                                <div class="qty-display" id="qty-${p.id}">1</div>
+                                <button class="qty-btn" data-id="${p.id}" data-action="increase">+</button>
+                            </div>
+                            <button class="add-to-cart-btn" data-id="${p.id}">Add to Cart</button>
+                        </div>
+                    </div>
+                `).join('');
+            });
+        }
+
+        // Change quantity
+        function changeQty(productId, change) {
+            quantities[productId] = Math.max(1, quantities[productId] + change);
+            document.getElementById('qty-' + productId).textContent = quantities[productId];
+        }
+
+        // Add to cart
+        function addToCart(productId) {
+            const product = Object.values(products).flat().find(p => p.id === productId);
+            if (product) {
+                cart.push({
+                    id: productId,
+                    name: product.name,
+                    price: product.price,
+                    quantity: quantities[productId]
+                });
+                quantities[productId] = 1;
+                document.getElementById('qty-' + productId).textContent = 1;
+                updateCartDisplay();
+            }
+        }
+
+        // Remove from cart
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartDisplay();
+        }
+
+        // Update cart display
+        function updateCartDisplay() {
+            const cartItemsEl = document.getElementById('cartItems');
+            const cartCountEl = document.getElementById('cartCount');
+            const totalAmountEl = document.getElementById('totalAmount');
+
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCountEl.textContent = totalItems;
+
+            if (cart.length === 0) {
+                cartItemsEl.innerHTML = '<div class="empty-cart-message">Your cart is empty</div>';
+                totalAmountEl.textContent = '$0.00';
+            } else {
+                let total = 0;
+                const html = cart.map((item, index) => {
+                    const itemTotal = item.price * item.quantity;
+                    total += itemTotal;
+                    return `
+                        <div class="cart-item">
+                            <div class="cart-item-info">
+                                <div class="cart-item-name">${item.name}</div>
+                                <div class="cart-item-price">$${item.price.toFixed(2)} each</div>
+                                <div class="cart-item-qty">Quantity: ${item.quantity}</div>
+                            </div>
+                            <button class="remove-btn" data-index="${index}">Remove</button>
+                        </div>
+                    `;
+                }).join('');
+                cartItemsEl.innerHTML = html;
+                totalAmountEl.textContent = '$' + total.toFixed(2);
+            }
+        }
+
+        // Toggle cart
+        function toggleCart() {
+            document.getElementById('cartOverlay').classList.toggle('active');
+            document.getElementById('cartSidebar').classList.toggle('active');
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProducts();
+
+            // Cart button
+            document.getElementById('cartButton').addEventListener('click', toggleCart);
+            document.getElementById('closeCartBtn').addEventListener('click', toggleCart);
+            document.getElementById('cartOverlay').addEventListener('click', toggleCart);
+
+            // Quantity buttons
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('qty-btn')) {
+                    const productId = e.target.dataset.id;
+                    const action = e.target.dataset.action;
+                    changeQty(productId, action === 'increase' ? 1 : -1);
+                }
+            });
+
+            // Add to cart buttons
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('add-to-cart-btn')) {
+                    addToCart(e.target.dataset.id);
+                }
+            });
+
+            // Remove from cart buttons
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('remove-btn')) {
+                    removeFromCart(parseInt(e.target.dataset.index));
+                }
+            });
+
+            // Checkout button
+            document.getElementById('checkoutBtn').addEventListener('click', () => {
+                if (cart.length === 0) {
+                    alert('Your cart is empty!');
+                } else {
+                    alert('Checkout functionality will be added in the next step!\n\nWe will send the order details to your Gmail.');
+                }
+            });
+
+            // Category navigation
+            document.querySelectorAll('.category-link').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const categoryId = e.target.dataset.category;
+                    const element = document.getElementById(categoryId);
+                    if (element) {
+                        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
